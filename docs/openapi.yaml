@@ -1,0 +1,211 @@
+openapi: 3.0.3
+info:
+  title: Offroad API
+  description: API REST para la app Offroad / Overlanding
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      tags: [System]
+      responses:
+        '200':
+          description: OK
+
+  /auth/register:
+    post:
+      summary: Registrar usuario
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name: { type: string }
+                email: { type: string, format: email }
+                password: { type: string, minLength: 8 }
+                password_confirmation: { type: string }
+      responses:
+        '201':
+          description: Usuario creado
+
+  /auth/login:
+    post:
+      summary: Iniciar sesion
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        '200':
+          description: Login exitoso
+
+  /auth/logout:
+    post:
+      summary: Cerrar sesion
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sesion cerrada
+
+  /auth/me:
+    get:
+      summary: Perfil del usuario autenticado
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Perfil
+
+  /vehicles:
+    get:
+      summary: Listar vehiculos del usuario
+      tags: [Vehicles]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de vehiculos
+    post:
+      summary: Crear vehiculo
+      tags: [Vehicles]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleInput'
+      responses:
+        '201':
+          description: Vehiculo creado
+
+  /vehicles/{id}:
+    get:
+      summary: Ver vehiculo
+      tags: [Vehicles]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Detalle del vehiculo
+    put:
+      summary: Actualizar vehiculo
+      tags: [Vehicles]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleInput'
+      responses:
+        '200':
+          description: Vehiculo actualizado
+    delete:
+      summary: Eliminar vehiculo
+      tags: [Vehicles]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Eliminado
+
+  /vehicles/{vehicleId}/maintenance-records:
+    get:
+      summary: Listar mantenimientos de un vehiculo
+      tags: [Maintenance]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Lista de registros
+    post:
+      summary: Crear registro de mantenimiento
+      tags: [Maintenance]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: vehicleId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceInput'
+      responses:
+        '201':
+          description: Registro creado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Sanctum
+
+  schemas:
+    VehicleInput:
+      type: object
+      required: [make, model, year]
+      properties:
+        make: { type: string }
+        model: { type: string }
+        year: { type: integer }
+        nickname: { type: string, nullable: true }
+        vin: { type: string, nullable: true }
+        odometer: { type: integer, nullable: true }
+        photo_path: { type: string, nullable: true }
+
+    MaintenanceInput:
+      type: object
+      required: [type, performed_at]
+      properties:
+        type: { type: string, example: oil_change }
+        title: { type: string, nullable: true }
+        performed_at: { type: string, format: date }
+        odometer: { type: integer, nullable: true }
+        cost: { type: number, format: float, nullable: true }
+        notes: { type: string, nullable: true }
