@@ -25,8 +25,10 @@ La idea del producto (directorio de talleres, garaje, rutas offroad, comunidad) 
 - [x] Registro, login, logout y perfil de usuario
 - [x] CRUD de vehículos (por usuario)
 - [x] CRUD de registros de mantenimiento
+- [x] Roles (`user`, `workshop_owner`, `admin`) y registro con `account_type`
+- [x] CRUD de talleres (dueño) + cola admin + directorio publicado
 - [x] Contrato OpenAPI en `docs/openapi.yaml`
-- [ ] Directorio de talleres y mapa
+- [ ] Mapa de talleres (MapLibre / PostGIS)
 - [ ] Rutas offroad, grupos, valoraciones
 
 ## Requisitos
@@ -63,10 +65,19 @@ docker compose up app
 | Método   | Ruta                                 | Auth | Descripción                |
 | -------- | ------------------------------------ | ---- | -------------------------- |
 | `GET`    | `/health`                            | No   | Estado del servicio        |
-| `POST`   | `/auth/register`                     | No   | Registro                   |
+| `POST`   | `/auth/register`                     | No   | Registro (`account_type` opcional) |
 | `POST`   | `/auth/login`                        | No   | Login                      |
 | `POST`   | `/auth/logout`                       | Sí   | Cerrar sesión              |
 | `GET`    | `/auth/me`                           | Sí   | Perfil del usuario         |
+| `POST`   | `/me/become-workshop-owner`          | Sí   | Convertir user → dueño     |
+| `GET`    | `/workshops`                         | Sí   | Directorio (solo published)|
+| `GET`    | `/workshops/{id}`                    | Sí   | Ficha de taller            |
+| `GET`    | `/my/workshops`                      | Sí*  | Talleres del dueño         |
+| `POST`   | `/my/workshops`                      | Sí*  | Crear taller               |
+| `PUT`    | `/my/workshops/{id}`                 | Sí*  | Editar taller              |
+| `POST`   | `/my/workshops/{id}/submit`          | Sí*  | Enviar a revisión          |
+| `GET`    | `/admin/workshops`                   | Admin| Lista / cola por `status`  |
+| `PATCH`  | `/admin/workshops/{id}/status`       | Admin| Publicar / suspender       |
 | `GET`    | `/vehicles`                          | Sí   | Listar vehículos           |
 | `POST`   | `/vehicles`                          | Sí   | Crear vehículo             |
 | `GET`    | `/vehicles/{id}`                     | Sí   | Ver vehículo               |
@@ -75,8 +86,20 @@ docker compose up app
 | `GET`    | `/vehicles/{id}/maintenance-records` | Sí   | Historial de mantenimiento |
 | `POST`   | `/vehicles/{id}/maintenance-records` | Sí   | Nuevo registro             |
 
+\* Requiere rol `workshop_owner` o `admin`.
 
-Contrato completo: `[docs/openapi.yaml](docs/openapi.yaml)`
+Contrato completo: `[docs/openapi.yaml](docs/openapi.yaml)`  
+Diseño del módulo: `[docs/talleres.md](docs/talleres.md)`
+
+### Cuentas demo (después de `db:seed`)
+
+| Email | Password | Rol |
+|-------|----------|-----|
+| `admin@offroad.test` | `password` | admin |
+| `owner@offroad.test` | `password` | workshop_owner |
+| `user@offroad.test` | `password` | user |
+
+El seeder también crea talleres de ejemplo (publicado, en revisión y borrador).
 
 ### Autenticación
 
@@ -130,6 +153,9 @@ offroad-api/
 ```powershell
 # Migraciones
 docker compose run --rm app php artisan migrate
+
+# Datos demo (admin, dueño, usuario + talleres)
+docker compose run --rm app php artisan db:seed
 
 # Shell en el contenedor
 docker compose run --rm app bash

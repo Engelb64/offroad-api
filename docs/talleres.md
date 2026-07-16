@@ -3,9 +3,9 @@
 Documento de diseño y paso a paso **antes de implementar código**.
 
 **Repos afectados:** `offroad-api` · `offroad-mobile`  
-**Estado:** diseño (sin código aún)  
+**Estado:** MVP implementado (pasos 1–7)  
 **Fecha:** julio 2026  
-**Última revisión:** alta self-service del dueño en registro + administración de su taller
+**Última revisión:** seeders demo + README; ciclo dueño → admin → directorio en app
 
 ---
 
