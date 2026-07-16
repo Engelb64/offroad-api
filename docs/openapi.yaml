@@ -115,6 +115,78 @@ paths:
         '200':
           description: Rol actualizado
 
+  /my/workshops:
+    get:
+      summary: Listar mis talleres
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de talleres del dueño
+    post:
+      summary: Crear mi taller
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyWorkshopInput'
+      responses:
+        '201':
+          description: Taller creado (draft o pending_review)
+
+  /my/workshops/{id}:
+    get:
+      summary: Ver mi taller
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Detalle
+    put:
+      summary: Actualizar mi taller
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyWorkshopInput'
+      responses:
+        '200':
+          description: Actualizado
+
+  /my/workshops/{id}/submit:
+    post:
+      summary: Enviar taller a revision
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Enviado a pending_review
+
   /vehicles:
     get:
       summary: Listar vehiculos del usuario
@@ -249,3 +321,28 @@ components:
         odometer: { type: integer, nullable: true }
         cost: { type: number, format: float, nullable: true }
         notes: { type: string, nullable: true }
+
+    MyWorkshopInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        description: { type: string, nullable: true }
+        phone: { type: string, nullable: true }
+        email: { type: string, format: email, nullable: true }
+        website: { type: string, nullable: true }
+        address: { type: string, nullable: true }
+        city: { type: string, nullable: true }
+        state: { type: string, nullable: true }
+        country: { type: string, example: VE }
+        latitude: { type: number, nullable: true }
+        longitude: { type: number, nullable: true }
+        services:
+          type: array
+          items: { type: string }
+        schedule: { type: object, nullable: true }
+        photo_path: { type: string, nullable: true }
+        submit:
+          type: boolean
+          description: Si true (default), crea en pending_review; si false, draft
+

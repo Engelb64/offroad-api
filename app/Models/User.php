@@ -40,6 +40,11 @@ class User extends Authenticatable
         return $this->hasMany(Vehicle::class);
     }
 
+    public function workshops(): HasMany
+    {
+        return $this->hasMany(Workshop::class, 'owner_id');
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;

@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\WorkshopStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
+
+class Workshop extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'owner_id',
+        'name',
+        'slug',
+        'description',
+        'phone',
+        'email',
+        'website',
+        'address',
+        'city',
+        'state',
+        'country',
+        'latitude',
+        'longitude',
+        'services',
+        'schedule',
+        'status',
+        'verified',
+        'photo_path',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'services' => 'array',
+            'schedule' => 'array',
+            'status' => WorkshopStatus::class,
+            'verified' => 'boolean',
+            'latitude' => 'decimal:7',
+            'longitude' => 'decimal:7',
+        ];
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function isOwnedBy(User $user): bool
+    {
+        return $this->owner_id !== null && (int) $this->owner_id === (int) $user->id;
+    }
+
+    public static function uniqueSlugFromName(string $name): string
+    {
+        $base = Str::slug($name);
+        $base = $base !== '' ? $base : 'taller';
+        $slug = $base;
+        $i = 1;
+
+        while (static::query()->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$i;
+            $i++;
+        }
+
+        return $slug;
+    }
+}
