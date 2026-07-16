@@ -187,6 +187,149 @@ paths:
         '200':
           description: Enviado a pending_review
 
+  /workshops:
+    get:
+      summary: Directorio de talleres publicados
+      tags: [Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: city
+          in: query
+          schema: { type: string }
+        - name: service
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista de talleres published
+
+  /workshops/{id}:
+    get:
+      summary: Ficha de taller
+      tags: [Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Detalle (published, o propio si soy dueño/admin)
+        '404':
+          description: No visible
+
+  /admin/workshops:
+    get:
+      summary: Listar todos los talleres (admin)
+      tags: [Admin Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, pending_review, published, suspended]
+        - name: q
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista completa / cola de revision
+    post:
+      summary: Crear taller (admin)
+      tags: [Admin Workshops]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminWorkshopInput'
+      responses:
+        '201':
+          description: Creado
+
+  /admin/workshops/{id}:
+    get:
+      summary: Ver taller (admin)
+      tags: [Admin Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Detalle
+    put:
+      summary: Actualizar taller (admin)
+      tags: [Admin Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminWorkshopInput'
+      responses:
+        '200':
+          description: Actualizado
+    delete:
+      summary: Eliminar taller (admin)
+      tags: [Admin Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Eliminado
+
+  /admin/workshops/{id}/status:
+    patch:
+      summary: Cambiar status / verified (admin)
+      tags: [Admin Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, pending_review, published, suspended]
+                verified: { type: boolean }
+      responses:
+        '200':
+          description: Estado actualizado
+
   /vehicles:
     get:
       summary: Listar vehiculos del usuario
@@ -345,4 +488,30 @@ components:
         submit:
           type: boolean
           description: Si true (default), crea en pending_review; si false, draft
+
+    AdminWorkshopInput:
+      type: object
+      required: [name]
+      properties:
+        owner_id: { type: integer, nullable: true }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        phone: { type: string, nullable: true }
+        email: { type: string, format: email, nullable: true }
+        website: { type: string, nullable: true }
+        address: { type: string, nullable: true }
+        city: { type: string, nullable: true }
+        state: { type: string, nullable: true }
+        country: { type: string, example: VE }
+        latitude: { type: number, nullable: true }
+        longitude: { type: number, nullable: true }
+        services:
+          type: array
+          items: { type: string }
+        schedule: { type: object, nullable: true }
+        photo_path: { type: string, nullable: true }
+        status:
+          type: string
+          enum: [draft, pending_review, published, suspended]
+        verified: { type: boolean }
 

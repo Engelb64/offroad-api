@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin\UserRoleController;
+use App\Http\Controllers\Api\V1\Admin\WorkshopController as AdminWorkshopController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\MaintenanceRecordController;
 use App\Http\Controllers\Api\V1\MyWorkshopController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\VehicleController;
+use App\Http\Controllers\Api\V1\WorkshopController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -29,6 +31,9 @@ Route::prefix('v1')->group(function () {
         Route::put('/maintenance-records/{maintenanceRecord}', [MaintenanceRecordController::class, 'update']);
         Route::delete('/maintenance-records/{maintenanceRecord}', [MaintenanceRecordController::class, 'destroy']);
 
+        Route::get('/workshops', [WorkshopController::class, 'index']);
+        Route::get('/workshops/{workshop}', [WorkshopController::class, 'show']);
+
         Route::middleware('role:workshop_owner,admin')->prefix('my')->group(function () {
             Route::get('/workshops', [MyWorkshopController::class, 'index']);
             Route::post('/workshops', [MyWorkshopController::class, 'store']);
@@ -39,6 +44,13 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('role:admin')->prefix('admin')->group(function () {
             Route::patch('/users/{user}/role', [UserRoleController::class, 'update']);
+
+            Route::get('/workshops', [AdminWorkshopController::class, 'index']);
+            Route::post('/workshops', [AdminWorkshopController::class, 'store']);
+            Route::get('/workshops/{workshop}', [AdminWorkshopController::class, 'show']);
+            Route::put('/workshops/{workshop}', [AdminWorkshopController::class, 'update']);
+            Route::patch('/workshops/{workshop}/status', [AdminWorkshopController::class, 'updateStatus']);
+            Route::delete('/workshops/{workshop}', [AdminWorkshopController::class, 'destroy']);
         });
     });
 });
