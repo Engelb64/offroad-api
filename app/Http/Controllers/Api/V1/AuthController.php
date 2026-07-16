@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -16,10 +17,16 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
+        $accountType = $request->validated('account_type', UserRole::User->value);
+        $role = $accountType === UserRole::WorkshopOwner->value
+            ? UserRole::WorkshopOwner
+            : UserRole::User;
+
         $user = User::create([
             'name' => $request->validated('name'),
             'email' => $request->validated('email'),
             'password' => $request->validated('password'),
+            'role' => $role,
         ]);
 
         $token = $user->createToken('mobile')->plainTextToken;
