@@ -31,6 +31,9 @@ class Workshop extends Model
         'status',
         'verified',
         'photo_path',
+        'moderation_note',
+        'moderation_at',
+        'moderated_by',
     ];
 
     protected function casts(): array
@@ -42,12 +45,18 @@ class Workshop extends Model
             'verified' => 'boolean',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
+            'moderation_at' => 'datetime',
         ];
     }
 
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function moderatedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
     }
 
     public function isOwnedBy(User $user): bool

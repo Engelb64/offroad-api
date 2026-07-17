@@ -32,6 +32,9 @@ class WorkshopResource extends JsonResource
                 : $this->status,
             'verified' => (bool) $this->verified,
             'photo_path' => $this->photo_path,
+            'moderation_note' => $this->moderation_note,
+            'moderation_at' => $this->moderation_at?->toISOString(),
+            'moderated_by' => $this->moderated_by,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

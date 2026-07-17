@@ -326,9 +326,14 @@ paths:
                   type: string
                   enum: [draft, pending_review, published, suspended]
                 verified: { type: boolean }
+                moderation_note:
+                  type: string
+                  description: Obligatorio al suspender (min. 5 caracteres). Se limpia al publicar.
       responses:
         '200':
           description: Estado actualizado
+        '422':
+          description: Validacion (ej. falta motivo al suspender)
 
   /vehicles:
     get:
@@ -514,4 +519,7 @@ components:
           type: string
           enum: [draft, pending_review, published, suspended]
         verified: { type: boolean }
+        moderation_note:
+          type: string
+          description: Usar en PATCH status; obligatorio al suspender
 

@@ -100,12 +100,14 @@ class MyWorkshopController extends Controller
             ]);
         }
 
-        if ($workshop->status === WorkshopStatus::Suspended) {
+        if ($workshop->status === WorkshopStatus::PendingReview) {
             return response()->json([
-                'message' => 'El taller esta suspendido. Contacta al administrador.',
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+                'message' => 'El taller ya esta en revision.',
+                'data' => new WorkshopResource($workshop),
+            ]);
         }
 
+        // draft o suspended → pending_review
         $workshop->status = WorkshopStatus::PendingReview;
         $workshop->save();
 

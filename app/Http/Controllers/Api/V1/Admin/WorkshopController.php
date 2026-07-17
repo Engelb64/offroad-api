@@ -84,17 +84,35 @@ class WorkshopController extends Controller
 
     public function updateStatus(UpdateWorkshopStatusRequest $request, Workshop $workshop): JsonResponse
     {
-        $workshop->status = WorkshopStatus::from($request->validated('status'));
+        $status = WorkshopStatus::from($request->validated('status'));
+        $workshop->status = $status;
 
         if ($request->exists('verified')) {
             $workshop->verified = $request->boolean('verified');
+        }
+
+        if ($status === WorkshopStatus::Suspended) {
+            $workshop->moderation_note = trim((string) $request->validated('moderation_note'));
+            $workshop->moderation_at = now();
+            $workshop->moderated_by = $request->user()?->id;
+        }
+
+        if ($status === WorkshopStatus::Published) {
+            // Al republicar se limpia el motivo visible para el dueño.
+            $workshop->moderation_note = null;
+            $workshop->moderation_at = null;
+            $workshop->moderated_by = null;
+
+            if (! $request->exists('verified')) {
+                $workshop->verified = true;
+            }
         }
 
         $workshop->save();
 
         return response()->json([
             'message' => 'Estado del taller actualizado.',
-            'data' => new WorkshopResource($workshop),
+            'data' => new WorkshopResource($workshop->fresh()),
         ]);
     }
 
