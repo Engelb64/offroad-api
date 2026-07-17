@@ -52,7 +52,7 @@ class WorkshopController extends Controller
         }
 
         return response()->json([
-            'data' => new WorkshopResource($workshop),
+            'data' => new WorkshopResource($workshop->load('photos')),
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\WorkshopStatus;
+use App\Services\WorkshopMediaService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -10,6 +11,9 @@ class WorkshopResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        /** @var WorkshopMediaService $media */
+        $media = app(WorkshopMediaService::class);
+
         return [
             'id' => $this->id,
             'owner_id' => $this->owner_id,
@@ -32,6 +36,15 @@ class WorkshopResource extends JsonResource
                 : $this->status,
             'verified' => (bool) $this->verified,
             'photo_path' => $this->photo_path,
+            'photo_url' => $media->url($this->photo_path),
+            'photos' => $this->whenLoaded('photos', function () use ($media) {
+                return $this->photos->map(fn ($photo) => [
+                    'id' => $photo->id,
+                    'url' => $media->url($photo->path),
+                    'path' => $photo->path,
+                    'sort_order' => (int) $photo->sort_order,
+                ])->values();
+            }, []),
             'moderation_note' => $this->moderation_note,
             'moderation_at' => $this->moderation_at?->toISOString(),
             'moderated_by' => $this->moderated_by,

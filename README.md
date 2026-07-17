@@ -76,6 +76,10 @@ docker compose up app
 | `POST`   | `/my/workshops`                      | Sí*  | Crear taller               |
 | `PUT`    | `/my/workshops/{id}`                 | Sí*  | Editar taller              |
 | `POST`   | `/my/workshops/{id}/submit`          | Sí*  | Enviar a revisión          |
+| `POST`   | `/my/workshops/{id}/photo`           | Sí*  | Foto principal (multipart) |
+| `DELETE` | `/my/workshops/{id}/photo`           | Sí*  | Quitar foto principal      |
+| `POST`   | `/my/workshops/{id}/photos`          | Sí*  | Foto secundaria (máx 3)    |
+| `DELETE` | `/my/workshops/{id}/photos/{photo}`  | Sí*  | Quitar secundaria          |
 | `GET`    | `/admin/workshops`                   | Admin| Lista / cola por `status`  |
 | `PATCH`  | `/admin/workshops/{id}/status`       | Admin| Publicar / suspender       |
 | `GET`    | `/vehicles`                          | Sí   | Listar vehículos           |
@@ -100,6 +104,13 @@ Diseño del módulo: `[docs/talleres.md](docs/talleres.md)`
 | `user@offroad.test` | `password` | user |
 
 El seeder también crea talleres de ejemplo (publicado, en revisión y borrador).
+
+### Media (fotos)
+
+- Disco configurable: `MEDIA_DISK=public` (local) o `s3` más adelante.
+- Paths: `users/{ownerId}/workshops/{workshopId}/cover.*` y `.../gallery/{uuid}.*`
+- La carpeta del usuario se crea al **primer archivo** subido (no al registrarse).
+- Tras instalar: `php artisan storage:link`
 
 ### Autenticación
 

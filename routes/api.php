@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\HealthController;
 use App\Http\Controllers\Api\V1\MaintenanceRecordController;
 use App\Http\Controllers\Api\V1\MyWorkshopController;
+use App\Http\Controllers\Api\V1\MyWorkshopPhotoController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\VehicleController;
 use App\Http\Controllers\Api\V1\WorkshopController;
@@ -40,6 +41,10 @@ Route::prefix('v1')->group(function () {
             Route::get('/workshops/{workshop}', [MyWorkshopController::class, 'show']);
             Route::put('/workshops/{workshop}', [MyWorkshopController::class, 'update']);
             Route::post('/workshops/{workshop}/submit', [MyWorkshopController::class, 'submit']);
+            Route::post('/workshops/{workshop}/photo', [MyWorkshopPhotoController::class, 'storeCover']);
+            Route::delete('/workshops/{workshop}/photo', [MyWorkshopPhotoController::class, 'destroyCover']);
+            Route::post('/workshops/{workshop}/photos', [MyWorkshopPhotoController::class, 'storeGallery']);
+            Route::delete('/workshops/{workshop}/photos/{photo}', [MyWorkshopPhotoController::class, 'destroyGallery']);
         });
 
         Route::middleware('role:admin')->prefix('admin')->group(function () {

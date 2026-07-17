@@ -21,6 +21,7 @@ class MyWorkshopController extends Controller
 
         $workshops = Workshop::query()
             ->where('owner_id', $request->user()->id)
+            ->with('photos')
             ->latest()
             ->get();
 
@@ -46,7 +47,7 @@ class MyWorkshopController extends Controller
         ]);
 
         return response()->json([
-            'data' => new WorkshopResource($workshop),
+            'data' => new WorkshopResource($workshop->load('photos')),
         ], Response::HTTP_CREATED);
     }
 
@@ -59,7 +60,7 @@ class MyWorkshopController extends Controller
         }
 
         return response()->json([
-            'data' => new WorkshopResource($workshop),
+            'data' => new WorkshopResource($workshop->load('photos')),
         ]);
     }
 
@@ -81,7 +82,7 @@ class MyWorkshopController extends Controller
         }
 
         return response()->json([
-            'data' => new WorkshopResource($workshop->fresh()),
+            'data' => new WorkshopResource($workshop->fresh()->load('photos')),
         ]);
     }
 

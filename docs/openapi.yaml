@@ -187,6 +187,94 @@ paths:
         '200':
           description: Enviado a pending_review
 
+  /my/workshops/{id}/photo:
+    post:
+      summary: Subir o reemplazar foto principal (cover)
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [photo]
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Cover actualizada
+        '422':
+          description: Validacion o error de storage
+    delete:
+      summary: Eliminar foto principal
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Cover eliminada
+
+  /my/workshops/{id}/photos:
+    post:
+      summary: Agregar foto secundaria (max 3)
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [photo]
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Secundaria agregada
+        '422':
+          description: Ya hay 3 o archivo invalido
+
+  /my/workshops/{id}/photos/{photoId}:
+    delete:
+      summary: Eliminar foto secundaria
+      tags: [My Workshops]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+        - name: photoId
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Secundaria eliminada
+
   /workshops:
     get:
       summary: Directorio de talleres publicados
@@ -489,7 +577,6 @@ components:
           type: array
           items: { type: string }
         schedule: { type: object, nullable: true }
-        photo_path: { type: string, nullable: true }
         submit:
           type: boolean
           description: Si true (default), crea en pending_review; si false, draft
@@ -514,7 +601,6 @@ components:
           type: array
           items: { type: string }
         schedule: { type: object, nullable: true }
-        photo_path: { type: string, nullable: true }
         status:
           type: string
           enum: [draft, pending_review, published, suspended]

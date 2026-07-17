@@ -32,7 +32,7 @@ class WorkshopController extends Controller
             });
         }
 
-        return WorkshopResource::collection($query->get());
+        return WorkshopResource::collection($query->with('photos')->get());
     }
 
     public function store(StoreAdminWorkshopRequest $request): JsonResponse
@@ -57,7 +57,7 @@ class WorkshopController extends Controller
     public function show(Workshop $workshop): JsonResponse
     {
         return response()->json([
-            'data' => new WorkshopResource($workshop),
+            'data' => new WorkshopResource($workshop->load('photos')),
         ]);
     }
 
@@ -78,7 +78,7 @@ class WorkshopController extends Controller
         }
 
         return response()->json([
-            'data' => new WorkshopResource($workshop->fresh()),
+            'data' => new WorkshopResource($workshop->fresh()->load('photos')),
         ]);
     }
 
@@ -112,7 +112,7 @@ class WorkshopController extends Controller
 
         return response()->json([
             'message' => 'Estado del taller actualizado.',
-            'data' => new WorkshopResource($workshop->fresh()),
+            'data' => new WorkshopResource($workshop->fresh()->load('photos')),
         ]);
     }
 

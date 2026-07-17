@@ -31,7 +31,6 @@ class UpdateAdminWorkshopRequest extends FormRequest
             'services' => ['nullable', 'array'],
             'services.*' => ['string', 'max:100'],
             'schedule' => ['nullable', 'array'],
-            'photo_path' => ['nullable', 'string', 'max:500'],
             'status' => ['sometimes', 'string', Rule::enum(WorkshopStatus::class)],
             'verified' => ['sometimes', 'boolean'],
         ];

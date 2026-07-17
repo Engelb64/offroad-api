@@ -28,7 +28,6 @@ class UpdateMyWorkshopRequest extends FormRequest
             'services' => ['nullable', 'array'],
             'services.*' => ['string', 'max:100'],
             'schedule' => ['nullable', 'array'],
-            'photo_path' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

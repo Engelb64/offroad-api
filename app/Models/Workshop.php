@@ -6,6 +6,7 @@ use App\Enums\WorkshopStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Workshop extends Model
@@ -57,6 +58,11 @@ class Workshop extends Model
     public function moderatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'moderated_by');
+    }
+
+    public function photos(): HasMany
+    {
+        return $this->hasMany(WorkshopPhoto::class)->orderBy('sort_order');
     }
 
     public function isOwnedBy(User $user): bool
