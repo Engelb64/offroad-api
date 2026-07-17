@@ -3,9 +3,9 @@
 Documento de diseño y paso a paso **antes de implementar código**.
 
 **Repos afectados:** `offroad-api` · `offroad-mobile`  
-**Estado:** MVP implementado (pasos 1–7)  
+**Estado:** MVP v1 + ver v2 en docs raíz  
 **Fecha:** julio 2026  
-**Última revisión:** seeders demo + README; ciclo dueño → admin → directorio en app
+**Última revisión:** talleres v2 cerrado — [`docs/talleres-v2.md`](../../docs/talleres-v2.md)
 
 ---
 

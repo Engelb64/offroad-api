@@ -103,7 +103,23 @@ Diseño del módulo: `[docs/talleres.md](docs/talleres.md)`
 | `owner@offroad.test` | `password` | workshop_owner |
 | `user@offroad.test` | `password` | user |
 
-El seeder también crea talleres de ejemplo (publicado, en revisión y borrador).
+El seeder también crea talleres de ejemplo:
+
+| Taller | Ciudad | Status | Coords approx |
+|--------|--------|--------|---------------|
+| Taller 4x4 Caracas | Caracas | published | 10.488, -66.829 |
+| Taller Valencia Trail | Valencia | published | 10.162, -68.008 |
+| Garage Maracay Offroad | Maracay | pending_review | 10.247, -67.596 |
+| Borrador Taller Demo | Valencia | draft | sí |
+
+### Cerca de mí (ejemplo)
+
+```http
+GET /api/v1/workshops?lat=10.48&lng=-66.90&radius_km=50&sort=distance
+Authorization: Bearer <token>
+```
+
+Respuesta incluye `distance_km` cuando hay `lat`/`lng`.
 
 ### Media (fotos)
 
