@@ -291,9 +291,29 @@ paths:
         - name: service
           in: query
           schema: { type: string }
+        - name: lat
+          in: query
+          schema: { type: number, example: 10.48 }
+          description: Latitud del usuario (con lng activa cerca de mi)
+        - name: lng
+          in: query
+          schema: { type: number, example: -66.90 }
+        - name: radius_km
+          in: query
+          schema: { type: number, default: 25 }
+          description: Radio en km (default 25 si hay lat/lng)
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [recent, distance]
+            default: recent
+          description: Con lat/lng el default es distance
       responses:
         '200':
-          description: Lista de talleres published
+          description: Lista published; incluye distance_km si hay lat/lng
+        '422':
+          description: Params invalidos
 
   /workshops/{id}:
     get:
@@ -306,9 +326,15 @@ paths:
           in: path
           required: true
           schema: { type: integer }
+        - name: lat
+          in: query
+          schema: { type: number }
+        - name: lng
+          in: query
+          schema: { type: number }
       responses:
         '200':
-          description: Detalle (published, o propio si soy dueño/admin)
+          description: Detalle (published, o propio si soy dueño/admin); distance_km opcional
         '404':
           description: No visible
 

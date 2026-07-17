@@ -29,6 +29,10 @@ class WorkshopResource extends JsonResource
             'country' => $this->country,
             'latitude' => $this->latitude !== null ? (float) $this->latitude : null,
             'longitude' => $this->longitude !== null ? (float) $this->longitude : null,
+            'distance_km' => $this->when(
+                isset($this->distance_km) && $this->distance_km !== null,
+                fn () => round((float) $this->distance_km, 2),
+            ),
             'services' => $this->services ?? [],
             'schedule' => $this->schedule,
             'status' => $this->status instanceof WorkshopStatus

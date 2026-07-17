@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Workshop extends Model
 {
     use HasFactory;
+
+    protected $hidden = [
+        'location',
+    ];
 
     protected $fillable = [
         'owner_id',
@@ -68,6 +73,33 @@ class Workshop extends Model
     public function isOwnedBy(User $user): bool
     {
         return $this->owner_id !== null && (int) $this->owner_id === (int) $user->id;
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (Workshop $workshop): void {
+            $workshop->syncLocation();
+        });
+    }
+
+    public function syncLocation(): void
+    {
+        if ($this->latitude === null || $this->longitude === null) {
+            DB::update('UPDATE workshops SET location = NULL WHERE id = ?', [$this->id]);
+
+            return;
+        }
+
+        DB::update(
+            'UPDATE workshops
+             SET location = ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography
+             WHERE id = ?',
+            [
+                (float) $this->longitude,
+                (float) $this->latitude,
+                $this->id,
+            ],
+        );
     }
 
     public static function uniqueSlugFromName(string $name): string

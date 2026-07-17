@@ -70,7 +70,7 @@ docker compose up app
 | `POST`   | `/auth/logout`                       | Sí   | Cerrar sesión              |
 | `GET`    | `/auth/me`                           | Sí   | Perfil del usuario         |
 | `POST`   | `/me/become-workshop-owner`          | Sí   | Convertir user → dueño     |
-| `GET`    | `/workshops`                         | Sí   | Directorio (solo published)|
+| `GET`    | `/workshops`                         | Sí   | Directorio (+ `lat`/`lng`/`radius_km`) |
 | `GET`    | `/workshops/{id}`                    | Sí   | Ficha de taller            |
 | `GET`    | `/my/workshops`                      | Sí*  | Talleres del dueño         |
 | `POST`   | `/my/workshops`                      | Sí*  | Crear taller               |
